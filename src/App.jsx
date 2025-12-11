@@ -1,44 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { User, CreditCard, Building2, CheckCircle, AlertCircle, Loader2, LogOut } from 'lucide-react';
 import { signIn, signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
-import Onboarding from './Onboarding';
-
-// --- UI 컴포넌트 ---
-const Card = ({ children, className }) => (
-  <div className={`bg-white rounded-xl shadow-lg p-6 ${className}`}>{children}</div>
-);
-
-const Button = ({ children, onClick, disabled, variant = 'primary' }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`w-full py-3 rounded-lg font-bold transition-all duration-200 ${
-      variant === 'primary'
-        ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300'
-        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-    }`}
-  >
-    {children}
-  </button>
-);
-
-const Input = ({ label, value, onChange, placeholder, type = "text" }) => (
-  <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-    <input
-      type={type}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-    />
-  </div>
-);
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Onboarding from './pages/Onboarding';
+import Payment from './pages/Payment';
+import PaymentReview from './pages/PaymentReview';
+import PaymentSuccess from './pages/PaymentSuccess';
+import Dashboard from './pages/Dashboard';
 
 // --- 메인 컴포넌트 ---
 export default function CalTaxDemo() {
   // 상태 관리
-  const [currentScreen, setCurrentScreen] = useState('login'); // login, onboarding, dashboard
+  const [currentScreen, setCurrentScreen] = useState('landing'); // landing, login, onboarding, dashboard, payment, payment-review, payment-success
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({ name: '', ssn: '', address: '', email: '' });
   const [selectedTab, setSelectedTab] = useState('FTB');
@@ -47,6 +20,7 @@ export default function CalTaxDemo() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('ACH');
 
   // 타이머 관리를 위한 Ref (메모리 누수 방지)
   const timerRef = useRef(null);
@@ -144,7 +118,7 @@ export default function CalTaxDemo() {
       }
     } catch (error) {
       console.log('미로그인 상태:', error);
-      setCurrentScreen('login');
+      setCurrentScreen('landing');
     }
   };
 
@@ -235,7 +209,7 @@ export default function CalTaxDemo() {
       setLoginForm({ email: '', password: '' });
       setPaymentStatus('idle');
       setPaymentData(null);
-      setCurrentScreen('login');
+      setCurrentScreen('landing');
     }
   };
 
@@ -269,6 +243,7 @@ export default function CalTaxDemo() {
           ssn: userInfo.ssn,
           address: userInfo.address,
           email: userInfo.email,
+          paymentMethod: selectedPaymentMethod,
         }),
       });
 
@@ -298,198 +273,90 @@ export default function CalTaxDemo() {
     timerRef.current = setTimeout(() => {
       setPaymentStatus('completed');
       setNotification(`📧 [Email Received] Payment Confirmation: $200.00 to ${selectedTab} processed.`);
-      
+
       // DB 상태 재확인
       if (userInfo.email) {
         // DB 반영 딜레이를 고려해 1초 뒤 조회
-        setTimeout(() => checkPaymentStatusFromDB(userInfo.email), 1000);
+        setTimeout(() => {
+          checkPaymentStatusFromDB(userInfo.email);
+        }, 1000);
       }
+      // 결제 완료 후 성공 페이지로 이동
+      setCurrentScreen('payment-success');
     }, 4000);
   };
 
   // --- 렌더링 ---
-
-  if (currentScreen === 'login') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Building2 className="w-8 h-8 text-blue-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">CalTax One</h1>
-            <p className="text-gray-500">Secure Login with Amazon Cognito</p>
-          </div>
-          
-          {loginError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {loginError}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin}>
-            <Input 
-              label="Email" 
-              value={loginForm.email}
-              onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-              placeholder="demo@caltax.gov" 
-            />
-            <Input 
-              label="Password" 
-              type="password"
-              value={loginForm.password}
-              onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-              placeholder="••••••••" 
-            />
-            <Button onClick={handleLogin} disabled={isLoading}>
-              {isLoading ? 'Verifying...' : 'Log In'}
-            </Button>
-          </form>
-        </Card>
-      </div>
-    );
+  switch (currentScreen) {
+    case 'landing':
+      return <Landing onGetStarted={() => setCurrentScreen('login')} />;
+    
+    case 'login':
+      return (
+        <Login
+          loginForm={loginForm}
+          setLoginForm={setLoginForm}
+          handleLogin={handleLogin}
+          isLoading={isLoading}
+          loginError={loginError}
+        />
+      );
+    
+    case 'onboarding':
+      return (
+        <Onboarding
+          onComplete={handleOnboardingComplete}
+          userInfo={userInfo}
+          setUserInfo={setUserInfo}
+        />
+      );
+    
+    case 'payment':
+      return (
+        <Payment
+          selectedTab={selectedTab}
+          setSelectedTab={handleTabChange}
+          onBack={() => setCurrentScreen('dashboard')}
+          onPayNow={() => setCurrentScreen('payment-review')}
+        />
+      );
+    
+    case 'payment-review':
+      return (
+        <PaymentReview
+          selectedTab={selectedTab}
+          userInfo={userInfo}
+          selectedPaymentMethod={selectedPaymentMethod}
+          setSelectedPaymentMethod={setSelectedPaymentMethod}
+          onBack={() => setCurrentScreen('payment')}
+          onConfirm={handlePayment}
+          isLoading={isLoading}
+          paymentStatus={paymentStatus}
+        />
+      );
+    
+    case 'payment-success':
+      return (
+        <PaymentSuccess
+          selectedTab={selectedTab}
+          onReturnToDashboard={() => setCurrentScreen('dashboard')}
+        />
+      );
+    
+    case 'dashboard':
+    default:
+      return (
+        <Dashboard
+          userInfo={userInfo}
+          notification={notification}
+          setNotification={setNotification}
+          onLogout={handleLogout}
+          onReviewPay={() => {
+            setCurrentScreen('payment');
+            setSelectedTab('FTB');
+          }}
+          setSelectedTab={setSelectedTab}
+        />
+      );
   }
-
-  if (currentScreen === 'onboarding') {
-    return (
-      <Onboarding 
-        onComplete={handleOnboardingComplete}
-        userInfo={userInfo}
-        setUserInfo={setUserInfo}
-      />
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      {notification && (
-        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg flex items-center gap-3 animate-bounce z-50 ${
-          notification.startsWith('❌') ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
-        }`}>
-          {notification.startsWith('❌') ? <AlertCircle className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
-          <span className="text-sm font-medium">{notification}</span>
-          <button 
-            onClick={() => setNotification(null)} 
-            className="ml-2 opacity-70 hover:opacity-100"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Hello, {userInfo.name || 'User'}</h1>
-            <p className="text-gray-500">Welcome to your tax dashboard</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 font-medium"
-          >
-            <LogOut className="w-5 h-5" />
-            <span>Logout</span>
-          </button>
-        </div>
-
-        <div className="flex gap-4 mb-6 border-b border-gray-200">
-          {['FTB', 'EDD', 'CDTFA'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => handleTabChange(tab)}
-              className={`pb-4 px-4 font-medium transition-colors relative ${
-                selectedTab === tab ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              {tab}
-              {selectedTab === tab && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600" />
-              )}
-            </button>
-          ))}
-        </div>
-
-        <Card>
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">{selectedTab} Payment</h2>
-              <p className="text-sm text-gray-500">2024 Q1 Estimated Tax</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-gray-900">$200.00</p>
-              <p className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full mt-1 inline-block">Due Soon</p>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-100">
-            <p className="text-xs font-bold text-gray-400 uppercase mb-2">Payer Information (Pre-filled)</p>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-gray-500">Name:</span> <span className="font-medium">{userInfo.name || 'Not set'}</span>
-              </div>
-              <div>
-                <span className="text-gray-500">SSN:</span> <span className="font-medium">{userInfo.ssn ? '***-**-' + userInfo.ssn.slice(-4) : 'Not set'}</span>
-              </div>
-            </div>
-          </div>
-
-          {paymentStatus === 'idle' && (
-            <div className="space-y-4">
-               <div className="flex items-center gap-3 p-3 border border-blue-200 bg-blue-50 rounded-lg cursor-pointer">
-                  <CreditCard className="text-blue-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-blue-900">Bank Transfer (ACH)</p>
-                    <p className="text-xs text-blue-600">
-                      {userInfo.address ? `Connected: ${userInfo.address.split(',')[0]}` : 'Payment method not configured'}
-                    </p>
-                  </div>
-                  <div className="w-4 h-4 rounded-full bg-blue-600 border-2 border-white ring-2 ring-blue-200"></div>
-               </div>
-              <Button onClick={handlePayment}>Submit & Pay $200.00</Button>
-            </div>
-          )}
-
-          {paymentStatus === 'processing' && (
-            <div className="text-center py-8">
-              <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-3" />
-              <p className="font-medium text-gray-900">Processing Request...</p>
-              <p className="text-sm text-gray-500">Sending to "Brain" Lambda</p>
-            </div>
-          )}
-
-          {paymentStatus === 'submitted' && (
-            <div className="text-center py-6 bg-green-50 rounded-lg border border-green-100">
-              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-              <h3 className="text-lg font-bold text-green-800">Request Received!</h3>
-              <p className="text-sm text-green-600 mb-4">
-                We have queued your payment. <br/>
-                The "Worker Lambda" is processing it in the background.
-              </p>
-              <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                Waiting for final confirmation...
-              </div>
-            </div>
-          )}
-
-          {paymentStatus === 'completed' && (
-            <div className="text-center py-6">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">Payment Successful</h3>
-              <p className="text-gray-500 mb-6">
-                {paymentData?.transactionId ? (
-                  <>Transaction ID: {paymentData.transactionId}<br/></>
-                ) : null}
-                {paymentData?.message || 'Added to official ledger.'}
-              </p>
-              <Button variant="secondary" onClick={() => { setPaymentStatus('idle'); setPaymentData(null); }}>Make Another Payment</Button>
-            </div>
-          )}
-
-        </Card>
-      </div>
-    </div>
-  );
 }
