@@ -9,42 +9,40 @@ export default function PaymentSuccess({ selectedTab, onReturnToDashboard }) {
 
   return (
     <div className="bg-white relative w-full min-h-screen">
-      <div className="max-w-md mx-auto relative pb-8">
+      <div className="max-w-md mx-auto relative pb-12 px-4 flex flex-col gap-8 pt-[200px] items-center">
         {/* Payment Successful 제목 */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[219px] w-[calc(100%-32px)] max-w-[354px]">
+        <div className="w-full">
           <p className="font-bold text-[24px] text-black text-center">
             Payment Successful
           </p>
         </div>
 
         {/* 체크 아이콘 */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[300px] size-[121px]">
+        <div className="size-[121px]">
           <img alt="Success" className="block max-w-none size-full" src={imgSimpleLineIconsCheckSuccess} />
         </div>
 
         {/* Summary 카드 */}
-        <div className="absolute bg-[#f6f6f6] h-[155px] left-1/2 -translate-x-1/2 rounded-[20px] top-[476px] w-[calc(100%-32px)] max-w-[359px]">
-          <div className="absolute left-4 top-[25px] w-[calc(100%-32px)] flex flex-col gap-[14px]">
-            <div className="flex flex-col gap-[10px]">
-              <p className="font-bold text-[20px] text-black">
-                {selectedTab} 2024 Q4 Personal Income Tax
-              </p>
-            </div>
-            <div className="flex flex-col gap-[10px]">
-              <p className="font-bold text-[32px] text-[#005aab]">
-                $200.00
-              </p>
-            </div>
-            <p className="font-normal text-[16px] text-black">
-              {formattedDate}
+        <div className="bg-[#f6f6f6] rounded-[20px] p-6 w-full flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <p className="font-bold text-[20px] text-black leading-tight">
+              {selectedTab} 2024 Q4 Personal Income Tax
             </p>
           </div>
+          <div className="flex flex-col gap-2">
+            <p className="font-bold text-[32px] text-[#005aab]">
+              $200.00
+            </p>
+          </div>
+          <p className="font-normal text-[16px] text-black text-right">
+            {formattedDate}
+          </p>
         </div>
 
         {/* Return to Dashboard 버튼 */}
         <button
           onClick={onReturnToDashboard}
-          className="absolute bg-[#005aab] h-[40px] left-1/2 -translate-x-1/2 px-[40px] py-[10px] rounded-[40px] top-[656px] w-[calc(100%-32px)] max-w-[359px] flex items-center justify-center"
+          className="bg-[#005aab] h-[50px] rounded-[40px] w-full flex items-center justify-center shadow-lg hover:bg-[#004a8b] active:scale-[0.98] transition-all"
         >
           <p className="font-bold text-[18px] text-white">
             Return to Dashboard

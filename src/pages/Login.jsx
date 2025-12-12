@@ -17,7 +17,7 @@ export default function Login({ loginForm, setLoginForm, handleLogin, isLoading,
       
       {/* 폼 영역 */}
       <div className="w-full max-w-[322px] px-4">
-        <form onSubmit={handleLogin} className="flex flex-col gap-5">
+        <form onSubmit={handleLogin} className="flex flex-col gap-2">
           {loginError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
               {loginError}

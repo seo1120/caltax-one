@@ -1,12 +1,11 @@
 import React from 'react';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const imgMaterialSymbolsLightLabProfileOutlineRounded = "https://www.figma.com/api/mcp/asset/860da5a0-f492-48ab-92c8-8dee10c31a56";
 const imgCarbonSecurity = "https://www.figma.com/api/mcp/asset/562cd119-2f1b-485d-b3da-18b758b7bd36";
 const imgRiDashboardLine = "https://www.figma.com/api/mcp/asset/5d3ad30d-26f4-4f50-aa74-0aa559a43cb8";
 const imgGroup = "https://www.figma.com/api/mcp/asset/d470cf6a-49ab-4d19-8248-b80bfd53ed86";
 const imgUilCalender = "https://www.figma.com/api/mcp/asset/cea5319f-14c6-4e16-9e7e-e9191126d7b0";
-const imgEllipse18 = "https://www.figma.com/api/mcp/asset/4eb3c8d5-a8af-41aa-a776-094a783f18fb";
 
 // 달력 데이터 생성 (특정 월)
 const getCalendarDays = (year, month) => {
@@ -109,114 +108,124 @@ export default function Dashboard({
           </div>
         </div>
 
-        {/* 대시보드 라벨 */}
-        <div className="absolute left-4 size-[18px] top-[285px]">
-          <img alt="" className="block max-w-none size-full" src={imgRiDashboardLine} />
-        </div>
-        <p className="absolute font-normal left-[22px] text-[16px] text-[#afd5ff] top-[284px]">
-          Dashboard
-        </p>
-
-        {/* 큰 파란 카드 - Total Amount Due */}
-        <div className="absolute bg-[#005aab] h-[304px] left-1/2 -translate-x-1/2 rounded-[20px] top-[267px] w-[calc(100%-24px)] max-w-[369px]">
-          <div className="absolute left-[35px] top-[53px] w-[171px] flex flex-col gap-4 items-start justify-center text-[#fbfbfb]">
-            <p className="font-normal text-[20px] w-full">Total Amount Due</p>
-            <p className="font-bold text-[32px] w-full">$600.00</p>
-          </div>
-        </div>
-
-        {/* 작은 파란 카드들 */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[423px] flex gap-4 w-[calc(100%-48px)] max-w-[369px]">
-          <div className="bg-[#1575cb] h-[77px] rounded-[16px] flex-1 flex flex-col justify-center items-start pl-4 text-[#fbfbfb]">
-            <p className="text-[16.551px]">Payments Due</p>
-            <p className="text-[20px]">3</p>
-          </div>
-          <div className="bg-[#1575cb] h-[77px] rounded-[16px] flex-1 flex flex-col justify-center items-start pl-4 text-[#fbfbfb]">
-            <p className="text-[16.551px]">Recent payment</p>
-            <p className="text-[20px]">$200.00</p>
-          </div>
-        </div>
-
-        {/* Review & Pay 버튼 */}
-        <div className="absolute bg-[#f6f6f6] h-[40px] left-1/2 -translate-x-1/2 px-[40px] py-[10px] rounded-[40px] top-[517px] w-[calc(100%-48px)] max-w-[339px] flex items-center justify-center">
-          <button
-            onClick={onReviewPay}
-            className="font-normal text-[18px] text-[#005aab]"
-          >
-            Review & Pay
-          </button>
-        </div>
-
-        {/* Upcoming Deadlines */}
-        <div className="absolute left-4 top-[598px] flex gap-[4px] items-center">
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="block max-w-none size-full" src={imgUilCalender} />
-          </div>
-          <p className="font-normal text-[16px] text-black">Upcoming Deadlines</p>
-        </div>
-
-        {/* Deadline 항목들 */}
-        <div className="absolute left-4 size-[11px] top-[641px]">
-          <div className="absolute inset-0">
-            <img alt="" className="block max-w-none size-full" src={imgEllipse18} />
-          </div>
-        </div>
-        <p className="absolute font-normal left-[23px] text-[18px] text-black top-[636px]">12/20</p>
-        <p className="absolute font-normal left-[79px] text-[17px] text-black top-[636.5px]">FTB Payment</p>
-
-        <div className="absolute left-4 size-[11px] top-[676px]">
-          <div className="absolute inset-0">
-            <img alt="" className="block max-w-none size-full" src={imgEllipse18} />
-          </div>
-        </div>
-        <p className="absolute font-normal left-[23px] text-[18px] text-black top-[671px]">12/22</p>
-        <p className="absolute font-normal left-[79px] text-[17px] text-black top-[671.5px]">EDD Payment</p>
-
-        <div className="absolute left-4 size-[11px] top-[711px]">
-          <div className="absolute inset-0">
-            <img alt="" className="block max-w-none size-full" src={imgEllipse18} />
-          </div>
-        </div>
-        <p className="absolute font-normal left-[23px] text-[18px] text-black top-[706px]">12/27</p>
-        <p className="absolute font-normal left-[79px] text-[17px] text-black top-[706.5px]">CDTFA Payment</p>
-
-        {/* 캘린더 그리드 */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[761px] w-[calc(100%-42px)] max-w-[336px] pb-4">
-          <div className="flex flex-col gap-4">
-            {/* 월 헤더 */}
-            <div className="text-center text-lg font-semibold text-black mb-2">
-              {currentMonth.monthName}
-            </div>
+        {/* Main Content Flow */}
+        <div className="absolute top-[267px] left-0 w-full px-4 flex flex-col gap-8 pb-8">
+          
+          {/* Main Blue Card Container */}
+          <div className="bg-[#005aab] rounded-[20px] w-full max-w-[369px] mx-auto flex flex-col p-[20px] pb-[20px] gap-6 shadow-lg">
             
-            {/* 요일 헤더 */}
-            <div className="grid grid-cols-7 gap-2 mb-2">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
-                <div key={idx} className="text-center text-xs font-medium text-gray-500">
-                  {day}
+            {/* 1. Dashboard Label */}
+            <div className="flex items-center gap-2 text-[#afd5ff]">
+              <div className="size-[20px]">
+                <img alt="" className="block max-w-none size-full" src={imgRiDashboardLine} />
+              </div>
+              <p className="font-normal text-[16px]">
+                Dashboard
+              </p>
+            </div>
+
+            {/* 2. Total Amount Due */}
+            <div className="flex flex-col gap-1 items-start justify-center text-[#fbfbfb]">
+              <p className="font-normal text-[20px]">Total Amount Due</p>
+              <p className="font-bold text-[32px]">$600.00</p>
+            </div>
+
+            {/* 3. Small Cards Row (Payments Due / Recent Payment) */}
+            <div className="flex gap-4 w-full">
+              <div className="bg-[#1575cb] h-[77px] rounded-[16px] flex-1 flex flex-col justify-center items-start pl-4 text-[#fbfbfb]">
+                <p className="text-[16.551px]">Payments Due</p>
+                <p className="text-[20px]">3</p>
+              </div>
+              <div className="bg-[#1575cb] h-[77px] rounded-[16px] flex-1 flex flex-col justify-center items-start pl-4 text-[#fbfbfb]">
+                <p className="text-[16.551px]">Recent payment</p>
+                <p className="text-[20px]">$200.00</p>
+              </div>
+            </div>
+
+            {/* 4. Review & Pay Button */}
+            <div className="bg-[#f6f6f6] h-[40px] px-[40px] py-[10px] rounded-[40px] w-full flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors">
+              <button
+                onClick={onReviewPay}
+                className="font-normal text-[18px] text-[#005aab] w-full h-full flex items-center justify-center"
+              >
+                Review & Pay
+              </button>
+            </div>
+          </div>
+
+          {/* Upcoming Deadlines Section */}
+          <div className="flex flex-col gap-4 max-w-[369px] mx-auto w-full">
+            <div className="flex gap-[4px] items-center">
+              <div className="relative shrink-0 size-[18px]">
+                <img alt="" className="block max-w-none size-full" src={imgUilCalender} />
+              </div>
+              <p className="font-normal text-[16px] text-black">Upcoming Deadlines</p>
+            </div>
+
+            {/* Timeline container */}
+            <div className="relative pl-3 border-l-2 border-[#1575cb] ml-[5px] space-y-4 pb-2">
+              {[
+                { date: '12/20', title: 'FTB Payment' },
+                { date: '12/22', title: 'EDD Payment' },
+                { date: '12/27', title: 'CDTFA Payment' }
+              ].map((item, index) => (
+                <div key={index} className="relative flex items-center gap-4 w-full">
+                  {/* Blue dot on the line */}
+                  <div className="absolute -left-[17px] top-1/2 -translate-y-1/2 size-[10px] rounded-full bg-[#1575cb]"></div>
+                  
+                  {/* Content */}
+                  <p className="font-normal text-[18px] text-black w-[50px]">{item.date}</p>
+                  <p className="font-normal text-[17px] text-black">{item.title}</p>
                 </div>
               ))}
             </div>
-            
-            {/* 달력 날짜 */}
-            <div className="grid grid-cols-7 gap-2">
-              {currentMonth.days.map((day, idx) => {
-                if (day === null) {
-                  return <div key={idx} className="size-[39px]"></div>;
-                }
-                const isImportant = importantDates.includes(day);
-                return (
-                  <div
-                    key={idx}
-                    className={`size-[39px] rounded-full flex items-center justify-center text-sm font-medium ${
-                      isImportant
-                        ? 'bg-[#1575cb] text-white'
-                        : 'bg-[#f6f6f6] text-black'
-                    }`}
-                  >
+          </div>
+
+          {/* 캘린더 그리드 */}
+          <div className="w-full max-w-[336px] mx-auto pb-4">
+            <div className="flex flex-col gap-4">
+              {/* 월 헤더 */}
+              <div className="flex items-center justify-between mb-2 px-2">
+                <button className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
+                  <ChevronLeft size={20} />
+                </button>
+                <div className="text-center text-lg font-semibold text-black">
+                  {currentMonth.monthName}
+                </div>
+                <button className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+              
+              {/* 요일 헤더 */}
+              <div className="grid grid-cols-7 gap-2 mb-2">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
+                  <div key={idx} className="text-center text-xs font-medium text-gray-500">
                     {day}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              
+              {/* 달력 날짜 */}
+              <div className="grid grid-cols-7 gap-2">
+                {currentMonth.days.map((day, idx) => {
+                  if (day === null) {
+                    return <div key={idx} className="size-[39px]"></div>;
+                  }
+                  const isImportant = importantDates.includes(day);
+                  return (
+                    <div
+                      key={idx}
+                      className="size-[39px] rounded-full flex flex-col items-center justify-center text-sm font-medium bg-[#f6f6f6] text-black relative"
+                    >
+                      <span>{day}</span>
+                      {isImportant && (
+                        <div className="absolute bottom-1 w-1.5 h-1.5 bg-[#1575cb] rounded-full"></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
